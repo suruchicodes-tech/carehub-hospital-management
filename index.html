@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareHub Hospital Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">+</div>
+        <div>
+          <strong>CareHub</strong>
+          <span>Hospital HMS</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#login">Login</a>
+        <a href="#reports">Reports</a>
+        <a href="#patients">Patients</a>
+        <a href="#doctors">Doctors</a>
+        <a href="#appointments">Appointments</a>
+        <a href="#rooms">Rooms</a>
+        <a href="#billing">Billing</a>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Emergency</strong>
+        <span>Ambulance: 108</span>
+        <span>Reception: +91 98765 43210</span>
+      </div>
+    </aside>
+
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Hospital Records Control</p>
+          <h1>All hospital details in one browser dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <label class="search">
+            <span>Search</span>
+            <input id="globalSearch" type="search" placeholder="Patient, doctor, room..." />
+          </label>
+          <button class="primary-btn" data-scroll="patients">Add Patient</button>
+          <button class="secondary-btn" data-scroll="login" id="loginShortcut">Login</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="stats-grid" aria-label="Hospital overview">
+        <article class="stat-card">
+          <span>Total Patients</span>
+          <strong id="patientCount">0</strong>
+          <small>Active records</small>
+        </article>
+        <article class="stat-card">
+          <span>Doctors</span>
+          <strong id="doctorCount">0</strong>
+          <small>Available staff</small>
+        </article>
+        <article class="stat-card">
+          <span>Appointments</span>
+          <strong id="appointmentCount">0</strong>
+          <small>Today and upcoming</small>
+        </article>
+        <article class="stat-card">
+          <span>Free Beds</span>
+          <strong id="freeBedCount">0</strong>
+          <small>Ready rooms</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <div class="panel login-panel" id="login">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Secure Login</p>
+              <h2>Scan QR or login with mobile and email OTP</h2>
+            </div>
+            <span class="badge warn" id="authStatus">Not logged in</span>
+          </div>
+          <div class="login-grid">
+            <div class="qr-card">
+              <img id="loginQr" alt="Scan to open login on phone" />
+              <strong>Scan with phone camera</strong>
+              <span class="meta">Mobile par website open hogi, phir email/mobile se OTP login karein.</span>
+            </div>
+            <form id="loginForm" class="form-grid login-form">
+              <label>Email<input name="email" required inputmode="email" placeholder="patient@email.com" /></label>
+              <label>Mobile Number<input name="mobile" required inputmode="tel" placeholder="+91 98765 43210" /></label>
+              <button class="primary-btn" type="submit">Send OTP</button>
+              <label id="otpField" class="otp-field">OTP<input name="otp" inputmode="numeric" placeholder="Enter 6 digit OTP" /></label>
+              <button id="verifyOtpBtn" class="secondary-btn otp-field" type="button">Verify OTP</button>
+              <p class="demo-otp" id="demoOtp"></p>
+            </form>
+            <form id="profileForm" class="form-grid login-form hidden">
+              <label>Logged In Email<input id="profileEmail" readonly /></label>
+              <label>Update Phone Number<input id="profileMobile" required inputmode="tel" placeholder="+91 98765 43210" /></label>
+              <label>Active Role<input id="profileRole" readonly /></label>
+              <button class="secondary-btn" type="submit">Save Phone</button>
+              <button class="icon-btn logout-btn" id="logoutBtn" type="button">Logout</button>
+            </form>
+            <form id="roleForm" class="role-form">
+              <div>
+                <p class="eyebrow">Staff Role Access</p>
+                <h3>Choose workspace role</h3>
+              </div>
+              <label>Role<select name="role" required><option>Admin</option><option>Doctor</option><option>Reception</option><option>Staff</option><option>Lab</option><option>Pharmacy</option><option>Patient</option></select></label>
+              <label>Staff Name<input name="name" required placeholder="Dr. Meera Kapoor / Suruchi" /></label>
+              <label>Passcode<input name="passcode" required placeholder="1234" /></label>
+              <button class="secondary-btn" type="submit">Open Role</button>
+              <p class="meta" id="roleMessage">Demo passcode: 1234</p>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel" id="roleWorkspace">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Role Workspace</p>
+              <h2 id="roleWorkspaceTitle">Guest access</h2>
+            </div>
+            <span class="badge warn" id="roleBadge">Guest</span>
+          </div>
+          <div id="roleCards" class="role-grid"></div>
+          <div id="roleWorkflow" class="role-workflow"></div>
+        </div>
+
+        <div class="panel" id="reports">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Reports Dashboard</p>
+              <h2>Charts for hospital activity</h2>
+            </div>
+          </div>
+          <div class="chart-grid">
+            <article class="chart-card">
+              <strong>Patients by Department</strong>
+              <canvas id="departmentChart" width="520" height="260"></canvas>
+            </article>
+            <article class="chart-card">
+              <strong>Room Occupancy</strong>
+              <canvas id="roomChart" width="520" height="260"></canvas>
+            </article>
+            <article class="chart-card">
+              <strong>Billing Status</strong>
+              <canvas id="billingChart" width="520" height="260"></canvas>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel" id="patients">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Patient Management</p>
+              <h2>Add and track patient details</h2>
+            </div>
+          </div>
+          <form id="patientForm" class="form-grid">
+            <input type="hidden" name="id" />
+            <label>Full Name<input name="name" required placeholder="Aarav Sharma" /></label>
+            <label>Age<input name="age" required inputmode="numeric" pattern="[0-9]*" placeholder="36" /></label>
+            <label>Weight (kg)<input name="weight" inputmode="decimal" placeholder="68" /></label>
+            <label>Blood Pressure<input name="bp" placeholder="120/80" /></label>
+            <label>Gender<select name="gender" required><option>Male</option><option>Female</option><option>Other</option></select></label>
+            <label>Phone<input name="phone" required placeholder="+91 98765 43210" /></label>
+            <label>Department<select name="department" required><option>General Medicine</option><option>Cardiology</option><option>Neurology</option><option>Orthopedics</option><option>Pediatrics</option><option>Emergency</option></select></label>
+            <label>Assigned Doctor<input name="doctor" required placeholder="Dr. Meera Kapoor" /></label>
+            <label class="wide">Address<input name="address" required placeholder="City, State" /></label>
+            <label>Blood Group<select name="bloodGroup"><option>Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label>
+            <label>Allergies<input name="allergies" placeholder="Penicillin, dust..." /></label>
+            <label class="wide">Diagnosis<input name="diagnosis" placeholder="Fever, injury, follow-up..." /></label>
+            <label class="wide">Prescription<input name="prescription" placeholder="Medicines advised by doctor" /></label>
+            <button class="primary-btn" type="submit">Save Patient</button>
+            <button class="icon-btn hidden" id="cancelPatientEdit" type="button">Cancel Edit</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Department</th><th>Doctor</th><th>Phone</th><th>Actions</th></tr></thead>
+              <tbody id="patientRows"></tbody>
+            </table>
+          </div>
+          <div class="patient-detail hidden" id="patientDetail">
+            <div class="detail-head">
+              <div>
+                <p class="eyebrow">Medical Record</p>
+                <h3 id="detailTitle">Patient details</h3>
+              </div>
+              <button class="icon-btn" id="closePatientDetail" type="button">Close</button>
+            </div>
+            <div id="detailSummary" class="detail-summary"></div>
+            <form id="visitForm" class="form-grid compact">
+              <input type="hidden" name="patientId" />
+              <label>Date<input name="date" required type="date" /></label>
+              <label>Doctor<input name="doctor" required placeholder="Doctor name" /></label>
+              <label>Diagnosis<input name="diagnosis" required placeholder="Visit diagnosis" /></label>
+              <label class="wide">Prescription / Notes<input name="notes" required placeholder="Visit notes, medicine, advice" /></label>
+              <button class="secondary-btn" type="submit">Add Visit</button>
+            </form>
+            <div id="visitTimeline" class="timeline"></div>
+          </div>
+        </div>
+
+        <div class="panel" id="doctors">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Doctor Directory</p>
+              <h2>Departments and availability</h2>
+            </div>
+          </div>
+          <form id="doctorForm" class="form-grid compact">
+            <label>Name<input name="name" required placeholder="Dr. Kabir Rao" /></label>
+            <label>Specialization<input name="specialization" required placeholder="Cardiology" /></label>
+            <label>Timing<input name="timing" required placeholder="10:00 AM - 4:00 PM" /></label>
+            <label>Status<select name="status" required><option>Available</option><option>In Surgery</option><option>On Leave</option></select></label>
+            <button class="secondary-btn" type="submit">Add Doctor</button>
+          </form>
+          <div id="doctorCards" class="card-list"></div>
+        </div>
+
+        <div class="panel" id="appointments">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Appointments</p>
+              <h2>Book visits and follow-ups</h2>
+            </div>
+          </div>
+          <form id="appointmentForm" class="form-grid compact">
+            <label>Patient<input name="patient" required placeholder="Patient name" /></label>
+            <label>Doctor<input name="doctor" required placeholder="Doctor name" /></label>
+            <label>Date<input name="date" required type="date" /></label>
+            <label>Time<input name="time" required type="time" /></label>
+            <label class="wide">Purpose<input name="purpose" required placeholder="Consultation, report review..." /></label>
+            <button class="secondary-btn" type="submit">Book Appointment</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Purpose</th><th></th></tr></thead>
+              <tbody id="appointmentRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" id="rooms">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Rooms and Beds</p>
+              <h2>Ward occupancy status</h2>
+            </div>
+          </div>
+          <form id="roomForm" class="form-grid compact">
+            <label>Room No.<input name="number" required placeholder="204" /></label>
+            <label>Type<select name="type" required><option>General</option><option>Private</option><option>ICU</option><option>Emergency</option></select></label>
+            <label>Status<select name="status" required><option>Available</option><option>Occupied</option><option>Cleaning</option></select></label>
+            <label>Patient<input name="patient" placeholder="Optional" /></label>
+            <button class="secondary-btn" type="submit">Save Room</button>
+          </form>
+          <div id="roomCards" class="room-grid"></div>
+        </div>
+
+        <div class="panel" id="billing">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Billing</p>
+              <h2>Charges, payments and room billing</h2>
+            </div>
+          </div>
+          <form id="billForm" class="form-grid compact">
+            <label>Patient<input name="patient" required placeholder="Patient name" /></label>
+            <label>Service<input name="service" required placeholder="Consultation" /></label>
+            <label>Amount<input name="amount" required inputmode="numeric" pattern="[0-9]*" placeholder="1200" /></label>
+            <label>Paid Amount<input name="paid" inputmode="numeric" pattern="[0-9]*" placeholder="0" /></label>
+            <label>Room No.<input name="roomNumber" placeholder="Optional" /></label>
+            <label>Room Days<input name="roomDays" inputmode="numeric" pattern="[0-9]*" placeholder="0" /></label>
+            <label>Room Charge/Day<input name="roomRate" inputmode="numeric" pattern="[0-9]*" placeholder="0" /></label>
+            <label>Status<select name="status" required><option>Paid</option><option>Pending</option></select></label>
+            <button class="secondary-btn" type="submit">Add Bill</button>
+          </form>
+          <div class="billing-summary" id="billingSummary"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Patient</th><th>Service</th><th>Room</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th></th></tr></thead>
+              <tbody id="billRows"></tbody>
+            </table>
+          </div>
+          <div class="patient-ledger" id="patientLedger"></div>
+        </div>
+      </section>
+    </main>
+
+    <button class="chat-launcher" id="chatLauncher" aria-label="Open patient chatbot">Chat</button>
+    <section class="chatbot hidden" id="chatbot" aria-label="Patient chatbot">
+      <div class="chat-head">
+        <div>
+          <strong>Care Assistant</strong>
+          <span>Patient help desk</span>
+        </div>
+        <button class="icon-btn" id="closeChat" type="button" aria-label="Close chat">X</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="bot-message">Namaste, aap doctor availability, room status, appointment, billing ya first-aid ke baare mein pooch sakte hain.</div>
+      </div>
+      <form id="chatForm" class="chat-form">
+        <input name="message" required placeholder="Ask patient question..." />
+        <button class="secondary-btn" type="submit">Send</button>
+      </form>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
